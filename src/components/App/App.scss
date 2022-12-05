@@ -1,0 +1,37 @@
+@import "../../styles/index.scss";
+
+.App {
+    background-color: #c2c2c2;
+    padding: 16px;
+    @include borders(white, #999)
+}
+
+.Header {
+    background: #c0c0c0;
+    padding: 10px 12px;
+    @include borders();
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Body {
+    margin-top: 16px;
+    background: #c0c0c0;
+    @include borders();
+    display: grid;
+    grid-template-rows: repeat(9, 1fr);
+    grid-template-columns: repeat(9, 1fr);
+}
+
+.Face {
+    @include borders(white, #999);
+    @include buttons;
+    width: 52px;
+    height: 52px;
+    font-size: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}

@@ -1,0 +1,47 @@
+@import "../../styles/index.scss";
+
+.Button {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    @include borders(white, #7b7b7b);
+    @include buttons;
+
+    &.visible {
+        border-color: #7b7b7b;
+        border-width: 1px;
+    }
+
+    span {
+        margin-left: 2px;
+        font-size: 12px;
+    }
+
+    &.value-1 {
+        color: blue;
+    }
+    &.value-2 {
+        color: green;
+    }
+    &.value-3 {
+        color: red;
+    }
+    &.value-4 {
+        color: purple;
+    }
+    &.value-5 {
+        color: maroon;
+    }
+    &.value-6 {
+        color: turquoise;
+    }
+    &.value-7 {
+        color: black;
+    }
+    &.value-8 {
+        color: grey;
+    }
+}
