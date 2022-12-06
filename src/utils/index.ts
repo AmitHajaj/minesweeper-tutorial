@@ -1,6 +1,53 @@
 import { MAX_COLS, MAX_ROWS, NUM_OF_BOMBS } from "../constants";
 import { CellValue, CellState, Cell } from "../types";
 
+const grabAllAdjacentCells = (
+  cells: Cell[][],
+  rowParam: number,
+  colParam: number
+): {
+  topLeftCell: Cell | null;
+  topCell: Cell | null;
+  topRigthCell: Cell | null;
+  rightCell: Cell | null;
+  bottomRightCell: Cell | null;
+  bottomCell: Cell | null;
+  bottomLeftCell: Cell | null;
+  leftCell: Cell | null;
+} => {
+  const topLeftCell =
+    rowParam > 0 && colParam > 0 ? cells[rowParam - 1][colParam - 1] : null;
+  const topCell = rowParam > 0 ? cells[rowParam - 1][colParam] : null;
+  const topRigthCell =
+    rowParam > 0 && colParam < MAX_COLS - 1
+      ? cells[rowParam - 1][colParam + 1]
+      : null;
+  const rightCell =
+    colParam < MAX_COLS - 1 ? cells[rowParam][colParam + 1] : null;
+  const bottomRightCell =
+    rowParam < MAX_ROWS - 1 && colParam < MAX_COLS - 1
+      ? cells[rowParam + 1][colParam + 1]
+      : null;
+  const bottomCell =
+    rowParam < MAX_ROWS - 1 ? cells[rowParam + 1][colParam] : null;
+  const bottomLeftCell =
+    rowParam < MAX_ROWS - 1 && colParam > 0
+      ? cells[rowParam + 1][colParam - 1]
+      : null;
+  const leftCell = colParam > 0 ? cells[rowParam][colParam - 1] : null;
+
+  return {
+    topLeftCell,
+    topCell,
+    topRigthCell,
+    rightCell,
+    bottomRightCell,
+    bottomCell,
+    bottomLeftCell,
+    leftCell,
+  };
+};
+
 export const generateCells = () => {
   let cells: Cell[][] = [];
 
@@ -50,49 +97,39 @@ export const generateCells = () => {
 
       let numberOfBombs = 0;
 
-      const topLeftBomb =
-        rowIndex > 0 && colIndex > 0 ? cells[rowIndex - 1][colIndex - 1] : null;
-      const topBomb = rowIndex > 0 ? cells[rowIndex - 1][colIndex] : null;
-      const topRightBomb =
-        rowIndex > 0 && colIndex < MAX_COLS - 1
-          ? cells[rowIndex - 1][colIndex + 1]
-          : null;
-      const rightBomb =
-        colIndex < MAX_COLS - 1 ? cells[rowIndex][colIndex + 1] : null;
-      const bottomRightBomb =
-        rowIndex < MAX_ROWS - 1 && colIndex < MAX_COLS - 1
-          ? cells[rowIndex + 1][colIndex + 1]
-          : null;
-      const bottomBomb =
-        rowIndex < MAX_ROWS - 1 ? cells[rowIndex + 1][colIndex] : null;
-      const bottomLeftBomb =
-        rowIndex < MAX_ROWS - 1 && colIndex > 0
-          ? cells[rowIndex + 1][colIndex - 1]
-          : null;
-      const leftBomb = colIndex > 0 ? cells[rowIndex][colIndex - 1] : null;
+      const {
+        topLeftCell,
+        topCell,
+        topRigthCell,
+        rightCell,
+        bottomRightCell,
+        bottomCell,
+        bottomLeftCell,
+        leftCell,
+      } = grabAllAdjacentCells(cells, rowIndex, colIndex);
 
-      if (topLeftBomb?.value === CellValue.bomb) {
+      if (topLeftCell?.value === CellValue.bomb) {
         numberOfBombs++;
       }
-      if (topBomb?.value === CellValue.bomb) {
+      if (topCell?.value === CellValue.bomb) {
         numberOfBombs++;
       }
-      if (topRightBomb?.value === CellValue.bomb) {
+      if (topRigthCell?.value === CellValue.bomb) {
         numberOfBombs++;
       }
-      if (rightBomb?.value === CellValue.bomb) {
+      if (rightCell?.value === CellValue.bomb) {
         numberOfBombs++;
       }
-      if (bottomRightBomb?.value === CellValue.bomb) {
+      if (bottomRightCell?.value === CellValue.bomb) {
         numberOfBombs++;
       }
-      if (bottomBomb?.value === CellValue.bomb) {
+      if (bottomCell?.value === CellValue.bomb) {
         numberOfBombs++;
       }
-      if (bottomLeftBomb?.value === CellValue.bomb) {
+      if (bottomLeftCell?.value === CellValue.bomb) {
         numberOfBombs++;
       }
-      if (leftBomb?.value === CellValue.bomb) {
+      if (leftCell?.value === CellValue.bomb) {
         numberOfBombs++;
       }
 
@@ -106,4 +143,110 @@ export const generateCells = () => {
   }
 
   return cells;
+};
+
+export const openMultipleCells = (
+  cells: Cell[][],
+  rowParam: number,
+  colParam: number
+): Cell[][] => {
+  let newCells = cells.slice();
+  const currCell = cells[rowParam][colParam];
+
+  newCells[rowParam][colParam].state = CellState.visible;
+
+  const {
+    topLeftCell,
+    topCell,
+    topRigthCell,
+    rightCell,
+    bottomRightCell,
+    bottomCell,
+    bottomLeftCell,
+    leftCell,
+  } = grabAllAdjacentCells(cells, rowParam, colParam);
+
+  if (
+    topLeftCell?.state === CellState.open &&
+    topLeftCell.value !== CellValue.bomb
+  ) {
+    if (topLeftCell.value === CellValue.none) {
+      newCells = openMultipleCells(newCells, rowParam - 1, colParam - 1);
+    } else {
+      newCells[rowParam - 1][colParam - 1].state = CellState.visible;
+    }
+  }
+
+  if (topCell?.state === CellState.open && topCell.value !== CellValue.bomb) {
+    if (topCell.value === CellValue.none) {
+      newCells = openMultipleCells(newCells, rowParam - 1, colParam);
+    } else {
+      newCells[rowParam - 1][colParam].state = CellState.visible;
+    }
+  }
+
+  if (
+    topRigthCell?.state === CellState.open &&
+    topRigthCell.value !== CellValue.bomb
+  ) {
+    if (topRigthCell.value === CellValue.none) {
+      newCells = openMultipleCells(newCells, rowParam - 1, colParam + 1);
+    } else {
+      newCells[rowParam - 1][colParam + 1].state = CellState.visible;
+    }
+  }
+
+  if (
+    rightCell?.state === CellState.open &&
+    rightCell.value !== CellValue.bomb
+  ) {
+    if (rightCell.value === CellValue.none) {
+      newCells = openMultipleCells(newCells, rowParam, colParam + 1);
+    } else {
+      newCells[rowParam][colParam + 1].state = CellState.visible;
+    }
+  }
+
+  if (
+    bottomRightCell?.state === CellState.open &&
+    bottomRightCell.value !== CellValue.bomb
+  ) {
+    if (bottomRightCell.value === CellValue.none) {
+      newCells = openMultipleCells(newCells, rowParam + 1, colParam + 1);
+    } else {
+      newCells[rowParam + 1][colParam + 1].state = CellState.visible;
+    }
+  }
+
+  if (
+    bottomCell?.state === CellState.open &&
+    bottomCell.value !== CellValue.bomb
+  ) {
+    if (bottomCell.value === CellValue.none) {
+      newCells = openMultipleCells(newCells, rowParam + 1, colParam);
+    } else {
+      newCells[rowParam + 1][colParam].state = CellState.visible;
+    }
+  }
+
+  if (
+    bottomLeftCell?.state === CellState.open &&
+    bottomLeftCell.value !== CellValue.bomb
+  ) {
+    if (bottomLeftCell.value === CellValue.none) {
+      newCells = openMultipleCells(newCells, rowParam + 1, colParam - 1);
+    } else {
+      newCells[rowParam + 1][colParam - 1].state = CellState.visible;
+    }
+  }
+
+  if (leftCell?.state === CellState.open && leftCell.value !== CellValue.bomb) {
+    if (leftCell.value === CellValue.none) {
+      newCells = openMultipleCells(newCells, rowParam, colParam - 1);
+    } else {
+      newCells[rowParam][colParam - 1].state = CellState.visible;
+    }
+  }
+
+  return newCells;
 };
