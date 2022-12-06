@@ -67,7 +67,6 @@ const App: React.FC = () => {
       let isBomb = newCells[rowParam][colParam].value === CellValue.bomb;
 
       while (isBomb) {
-        console.log("bombbbb");
         newCells = generateCells();
         if (newCells[rowParam][colParam].value !== CellValue.bomb) {
           isBomb = false;
